@@ -45,6 +45,22 @@ export const NoteForm: React.FC<NoteFormProps> = ({
   const [currentTags, setCurrentTags] = useState<string[]>(initialData?.tags || []);
   const [currentTag, setCurrentTag] = useState<string>("");
   
+  // Move the function definition before it's used
+  const getTemplateDefault = (templateType: string) => {
+    switch (templateType) {
+      case "SOAP":
+        return "Subjective:\n\nObjective:\n\nAssessment:\n\nPlan:";
+      case "H&P":
+        return "History:\n\nPhysical:\n\nAssessment:\n\nPlan:";
+      case "Follow-up":
+        return "Interval History:\n\nFindings:\n\nAssessment:\n\nPlan:";
+      case "Free":
+        return "";
+      default:
+        return "";
+    }
+  };
+  
   const form = useForm<FormData>({
     defaultValues: {
       templateType: initialData?.templateType || "SOAP",
@@ -74,21 +90,6 @@ export const NoteForm: React.FC<NoteFormProps> = ({
 
   const removeTag = (tagToRemove: string) => {
     setCurrentTags(currentTags.filter(tag => tag !== tagToRemove));
-  };
-
-  const getTemplateDefault = (templateType: string) => {
-    switch (templateType) {
-      case "SOAP":
-        return "Subjective:\n\nObjective:\n\nAssessment:\n\nPlan:";
-      case "H&P":
-        return "History:\n\nPhysical:\n\nAssessment:\n\nPlan:";
-      case "Follow-up":
-        return "Interval History:\n\nFindings:\n\nAssessment:\n\nPlan:";
-      case "Free":
-        return "";
-      default:
-        return "";
-    }
   };
 
   const handleTemplateChange = (value: string) => {
