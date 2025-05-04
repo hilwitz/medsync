@@ -6,13 +6,18 @@ import { PatientList } from "@/components/patients/PatientList";
 import { useAppContext } from "@/contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
-  const { patients, fetchPatients } = useAppContext();
+  const { patients, fetchPatients, isLoading } = useAppContext();
+  const { user } = useAuth();
   
   useEffect(() => {
-    fetchPatients();
-  }, [fetchPatients]);
+    // Only fetch if we have a user and no patients yet
+    if (user && patients.length === 0 && !isLoading) {
+      fetchPatients();
+    }
+  }, [user, patients.length, isLoading, fetchPatients]);
   
   return (
     <AppLayout>

@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { Patient, Note } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
@@ -32,7 +31,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -66,18 +65,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Load initial data when user changes
   useEffect(() => {
     if (user) {
-      fetchPatients();
-      fetchNotes();
-      setIsLoading(false);
+      // Use a function to avoid directly calling hooks in useEffect
+      const loadInitialData = async () => {
+        setIsLoading(true);
+        try {
+          await fetchPatients();
+          // Only fetch all notes if needed, otherwise this will be done when selecting a patient
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error loading initial data:", error);
+          setIsLoading(false);
+        }
+      };
+      
+      loadInitialData();
     } else {
       // Clear state when user logs out
       setPatients([]);
       setNotes([]);
       setSelectedPatient(null);
     }
-  }, [user]);
+  }, [user]); // Only trigger this when user changes, not on every render
 
   const fetchPatients = async () => {
+    if (!user) return;
+    
     try {
       setIsLoading(true);
       const { data, error } = await supabase
@@ -102,6 +114,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const fetchNotes = async (patientId?: string) => {
+    if (!user) return;
+    
     try {
       setIsLoading(true);
       let query = supabase.from('notes').select('*');
@@ -134,18 +148,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return;
     }
     
+    // Check if we already have this patient loaded, to avoid unnecessary fetching
+    const existingPatient = patients.find(p => p.id === patientId);
+    if (existingPatient) {
+      setSelectedPatient(existingPatient);
+      // Still fetch notes for this patient
+      fetchNotes(patientId);
+      return;
+    }
+    
     try {
       setIsLoading(true);
       const { data, error } = await supabase
         .from('patients')
         .select('*')
         .eq('id', patientId)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single to avoid errors
         
       if (error) throw error;
       
-      const patient = mapPatient(data);
-      setSelectedPatient(patient);
+      if (data) {
+        const patient = mapPatient(data);
+        setSelectedPatient(patient);
+      } else {
+        setSelectedPatient(null);
+        toast({
+          title: "Error",
+          description: "Patient not found",
+          variant: "destructive",
+        });
+      }
       
       // Also fetch this patient's notes
       await fetchNotes(patientId);
@@ -154,7 +186,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setSelectedPatient(null);
       toast({
         title: "Error",
-        description: "Patient not found",
+        description: "Error loading patient",
         variant: "destructive",
       });
     } finally {

@@ -93,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) throw error;
-      navigate('/');
+      // Don't navigate here, let the auth state change handle it
     } catch (error: any) {
       toast({
         title: 'Error',
