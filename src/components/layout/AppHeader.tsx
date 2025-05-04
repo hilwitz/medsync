@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
-import { Search, Plus, Menu } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -48,15 +47,10 @@ export const AppHeader: React.FC = () => {
             <NavLink to="/notes" label="Recent Notes" />
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>
-            <Link to="/patients/new">
-              <Button size="sm" className="bg-medblue-500 hover:bg-medblue-600">
-                <Plus className="h-4 w-4 mr-1" /> New Patient
-              </Button>
-            </Link>
           </div>
         </div>
       </div>
