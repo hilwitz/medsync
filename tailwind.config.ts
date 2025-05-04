@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,30 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// MedNote specific colors
+				medblue: {
+					100: '#e6f0ff',
+					200: '#cce0ff',
+					300: '#99c2ff',
+					400: '#66a3ff',
+					500: '#4a9df8', // primary blue
+					600: '#3385ff',
+					700: '#0066ff',
+					800: '#0052cc',
+					900: '#003d99',
+				},
+				medgreen: {
+					100: '#e6f7ee',
+					200: '#ccf0dd',
+					300: '#99e1bb',
+					400: '#66d299',
+					500: '#50c878', // primary green
+					600: '#33c065',
+					700: '#00b33c',
+					800: '#008f30',
+					900: '#006b24',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
