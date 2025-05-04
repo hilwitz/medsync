@@ -1,6 +1,7 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
-import { Search, Menu } from "lucide-react";
+import { Search, Menu, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,9 +11,20 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const AppHeader: React.FC = () => {
+  const { user, signOut } = useAuth();
+  
   return (
     <header className="bg-white shadow-sm border-b border-gray-100">
       <div className="container mx-auto px-4 py-4">
@@ -32,7 +44,6 @@ export const AppHeader: React.FC = () => {
                 <nav className="mt-6 flex flex-col space-y-3">
                   <MobileNavLink to="/" label="Patients" />
                   <MobileNavLink to="/notes" label="Recent Notes" />
-                  <MobileNavLink to="/account" label="Account" />
                 </nav>
               </SheetContent>
             </Sheet>
@@ -47,10 +58,28 @@ export const AppHeader: React.FC = () => {
             <NavLink to="/notes" label="Recent Notes" />
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  {user?.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
